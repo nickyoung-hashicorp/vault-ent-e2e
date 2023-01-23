@@ -1,0 +1,46 @@
+### Windows Server 2016 - for LDAP Auth Method
+### Includes all created resources, variables, and outputs
+
+data "aws_ami" "windows" {
+  most_recent = true
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2016-English-Full-Base-*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+  owners = ["801119661308"]
+}
+
+resource "aws_instance" "windows" {
+  ami               = data.aws_ami.windows.id
+  instance_type     = "t2.large"
+  subnet_id         = module.vault-prereqs.public_subnet_ids[0]
+  key_name          = "nyoung-key"
+  get_password_data = true
+
+  security_groups = [
+    aws_security_group.allow_sg.id,
+  ]
+
+  associate_public_ip_address = true
+  ebs_optimized               = false
+
+  tags = {
+    Name = "nyoung-vault-windows-ad"
+  }
+}
+
+output "windows-public-ip" {
+  value = aws_instance.windows.public_ip
+}
+
+output "windows-private-ip" {
+  value = aws_instance.windows.private_ip
+}
+
+output "windows_password" {
+  value = rsadecrypt(aws_instance.windows.password_data, file("~/.ssh/nyoung-key.pem"))
+}
