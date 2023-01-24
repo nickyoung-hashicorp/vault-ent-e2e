@@ -7,12 +7,22 @@
 
 
 ## Provision Infrastructure
-Clone the repo and provisiong the AWS infrastructure
+Open a terminal and clone the repo:
 ```
-git clone <REPO>
-cd <REPO>
+git clone https://github.com/nickyoung-hashicorp/vault-ent-e2e
+cd vault-ent-e2e
+```
+
+Modify the `terraform.tfvars` file with your desired AWS region, A record, and your *existing* hosted zone in Route53.  An existing example is there for you, which you can modify and save your changes.
+
+Next, replace the contents of `vault.hclic` with a valid Vault Enterprise license string and save your changes.
+
+Once completed, initialize and provisiong the infrastructure:
+```
 terraform init && terraform apply -auto-approve -parallelism=50
 ```
+
+If successful, you shoudl see a variety of Terraform outputs.
 
 ## Setup Vault Enterprise with Integrated Storage
 Once the apply completes, save the variables as follows:
